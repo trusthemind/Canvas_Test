@@ -1,21 +1,65 @@
 let canvas = document.getElementById("canvas");
-let context =canvas.getContext("2d");
-
-canvas.width = 800;
 canvas.height = 600;
+canvas.width = 800;
+const ctx = canvas.getContext('2d')
 
-canvas.addEventListener("click" ,function(event){
-    let x = event.offsetX;
-    let y = event.offsetY; 
+function drawLine(ctx, line) {
+  const {
+    start,
+    end,
+    lineWidth = 10,
+    lineCap = 'round', 
+    strokeStyle = 'black',
+  } = line
 
-    context.fillStyle = "black"
-    context.beginPath()
-    context.arc(x,y,3,0,Math.PI*2)
-    context.fill();
-    context.stroke();
+  if(!start || !end) {
+    throw new Error('Start or end of line not defined.')
+  }
+
+  ctx.beginPath()
+  ctx.moveTo(start.x, start.y)
+  ctx.lineTo(end.x, end.y)
+  ctx.lineWidth = lineWidth
+  ctx.lineCap = lineCap
+  ctx.strokeStyle = strokeStyle
+  ctx.stroke()
+}
+
+let isPressed = false;
+let mouseDownPos = null
+
+document.addEventListener('mousedown', function(e) {
+  isPressed = true
+  mouseDownPos = {
+    x: e.clientX - canvas.offsetLeft,
+    y: e.clientY - canvas.offsetTop
+  }
+
+  const line = {
+    start: mouseDownPos,
+    end: mouseDownPos,
+  }
+
+  drawLine(ctx, line)
 })
 
-context.lineWidth = 1;
-context.moveTo(10, 50); //передвигаем перо
-context.lineTo(20, 100); //рисуем линию
-context.stroke();
+document.addEventListener('mouseup', function() {
+  isPressed = false
+})
+
+document.addEventListener('mousemove', function(e) {
+  if(isPressed) {
+    let currentPos = {
+      x: e.clientX - canvas.offsetLeft,
+      y: e.clientY - canvas.offsetTop
+    }
+
+    let line = {
+      start: mouseDownPos,
+      end: currentPos
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    drawLine(ctx, line)
+  }
+})
