@@ -89,4 +89,5 @@ document.addEventListener("mousemove", handleMouseMove);
 
 document.getElementById("canvas_clear").addEventListener("click", function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  lines = lines.splice(0,lines.length);
 });
